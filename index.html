@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script type="text/javascript" src="/___vscode_livepreview_injected_script"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>obj. | hardware</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; height: 100%; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+        /* ── SCROLL SNAP CONTAINER ── */
+        #scroller {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        /* ── SNAP SECTIONS ── */
+        .snap-sec {
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            min-height: 100vh;
+        }
+        /* shop & footer are tall — snap but allow free scroll within */
+        .snap-free {
+            scroll-snap-align: start;
+            scroll-snap-stop: normal;
+        }
+
+        .content-width { max-width: 860px; margin: 0 auto; }
+
+        /* HERO */
+        .hero-mesh {
+            background-color: #0a0a0a;
+            background-image:
+                radial-gradient(ellipse 80% 60% at 10% 20%, hsla(260,90%,60%,0.35) 0, transparent 60%),
+                radial-gradient(ellipse 60% 50% at 90% 80%, hsla(340,90%,60%,0.3) 0, transparent 55%),
+                radial-gradient(ellipse 50% 40% at 60% 10%, hsla(200,100%,60%,0.2) 0, transparent 50%);
+        }
+        .hero-orb { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; animation: orbFloat 8s ease-in-out infinite; }
+        @keyframes orbFloat { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-30px) scale(1.05); } }
+        .hero-tag { display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 99px; padding: 6px 14px; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.6); backdrop-filter: blur(8px); }
+        .hero-tag-dot { width: 6px; height: 6px; background: #4ade80; border-radius: 50%; animation: blink 1.5s infinite; }
+        @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .hero-word-color { background: linear-gradient(135deg, #a78bfa 0%, #f472b6 50%, #fb923c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .hero-scroll-hint { position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%); opacity: 0.3; animation: bob 2s ease-in-out infinite; }
+        @keyframes bob { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(6px); } }
+        .hero-stat { display: flex; flex-direction: column; align-items: center; }
+        .hero-stat-num { font-size: 1.5rem; font-weight: 800; color: #fff; }
+        .hero-stat-label { font-size: 10px; font-weight: 700; color: rgba(255,255,255,0.4); margin-top: 2px; }
+
+        /* REVEAL */
+        @keyframes slideUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        .reveal { animation: slideUp 0.8s ease forwards; }
+
+        /* PILLS */
+        .btn-pill { border-radius: 99px !important; }
+        .cat-pill { background: #f4f4f5; color: #18181b; padding: 6px 16px; border-radius: 99px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; border: none; }
+        .cat-pill.active, .cat-pill:hover { background: #000; color: #fff; }
+
+        /* DOCK */
+        .dock-wrapper { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(30px); z-index: 500; opacity: 0; pointer-events: none; transition: all 0.5s cubic-bezier(0.16,1,0.3,1); }
+        .dock-active { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
+        .dock-btn { background: #000; color: #fff; padding: 0.75rem 1.5rem; border-radius: 99px; display: flex; align-items: center; gap: 0.75rem; box-shadow: 0 20px 40px rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); }
+
+        /* TOAST */
+        .toast { position: fixed; top: 1.25rem; left: 50%; transform: translateX(-50%) translateY(-60px); background: #000; color: #fff; padding: 0.6rem 1.2rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; opacity: 0; pointer-events: none; transition: all 0.3s ease; z-index: 800; white-space: nowrap; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        /* STICKY BANNER */
+        .sticky-banner {background: #000;color: #fff;text-align: center;padding: 10px 1rem;font-size: 11px;font-weight: 800;text-transform: uppercase;/* position: sticky; */top: 0;z-index: 100;}
+
+        /* TRUST */
+        .trust-item { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #71717a; }
+
+        /* BADGES */
+        .badge-limited { background: #000; color: #fff; font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 99px; text-transform: uppercase; display: inline-block; margin-bottom: 6px; }
+        .badge-new { background: #18181b; color: #a3e635; font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 99px; text-transform: uppercase; display: inline-block; margin-bottom: 6px; }
+        .badge-sale { background: #ef4444; color: #fff; font-size: 9px; font-weight: 800; padding: 3px 8px; border-radius: 99px; text-transform: uppercase; display: inline-block; margin-bottom: 6px; }
+
+        /* URGENCY */
+        .urgency-bar { background: #fafafa; border: 1px dashed #e4e4e7; border-radius: 99px; padding: 6px 14px; display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; color: #18181b; }
+        .urgency-dot { width: 6px; height: 6px; background: #ef4444; border-radius: 50%; animation: blink 1.2s infinite; flex-shrink: 0; }
+
+        /* PRODUCTS */
+        .product-flex { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; }
+        .product-card { flex: 1 1 200px; max-width: 260px; }
+
+        /* ABOUT */
+        .about-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+        .about-card { background: #f9f9f9; border-radius: 2rem; padding: 2rem; }
+
+        /* PRODUCT SCREEN */
+        .product-screen { position: fixed; inset: 0; z-index: 600; background: #fff; transform: translateX(100%); transition: transform 0.45s cubic-bezier(0.16,1,0.3,1); overflow-y: auto; }
+        .product-screen.open { transform: translateX(0); }
+
+        /* CART SHEET */
+        .cart-overlay { position: fixed; inset: 0; z-index: 700; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .cart-overlay.active { opacity: 1; pointer-events: auto; }
+        .cart-sheet { background: #fff; width: 100%; max-width: 420px; border-radius: 2.5rem 2.5rem 0 0; padding: 2.5rem; transform: translateY(40px); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); }
+        .cart-overlay.active .cart-sheet { transform: translateY(0); }
+
+        /* CART SWIPE */
+        .cart-item { position: relative; overflow: hidden; border-radius: 1rem; }
+        .cart-item-inner { background: #fff; padding: 0.75rem; display: flex; align-items: center; gap: 0.75rem; position: relative; z-index: 1; transition: transform 0.3s ease; touch-action: pan-y; }
+        .cart-item-del { position: absolute; right: 0; top: 0; bottom: 0; width: 70px; background: #ef4444; display: flex; align-items: center; justify-content: center; z-index: 0; border-radius: 1rem; }
+
+        /* EXIT */
+        .exit-overlay { position: fixed; inset: 0; z-index: 900; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; padding: 1.5rem; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .exit-overlay.active { opacity: 1; pointer-events: auto; }
+        .exit-card { background: #fff; border-radius: 2.5rem; padding: 2.5rem; max-width: 360px; width: 100%; text-align: center; transform: translateY(20px) scale(0.97); transition: transform 0.4s cubic-bezier(0.16,1,0.3,1); }
+        .exit-overlay.active .exit-card { transform: translateY(0) scale(1); }
+    </style>
+</head>
+<body class="bg-white text-zinc-900 lowercase selection:bg-black selection:text-white">
+
+<!-- ══════════════════════════════════
+     SCROLL SNAP CONTAINER
+══════════════════════════════════ -->
+<div id="scroller">
+
+
+    <!-- ═══ HERO ═══ -->
+    <section id="hero" class="snap-sec hero-mesh flex flex-col justify-center px-8 text-center relative overflow-hidden">
+        <div class="hero-orb" style="width:500px;height:500px;background:hsla(265,80%,65%,0.25);top:-100px;left:-150px;animation-delay:0s;"></div>
+        <div class="hero-orb" style="width:400px;height:400px;background:hsla(340,80%,65%,0.2);bottom:-80px;right:-100px;animation-delay:2s;"></div>
+        <div class="hero-orb" style="width:300px;height:300px;background:hsla(200,90%,65%,0.15);top:30%;right:10%;animation-delay:4s;"></div>
+        <div class="content-width mx-auto relative z-10">
+            <div class="flex justify-center mb-8 reveal">
+                <span class="hero-tag"><span class="hero-tag-dot"></span>batch 001 now live — limited stock</span>
+            </div>
+            <h2 class="text-[16vw] md:text-[110px] font-extrabold leading-[0.85] mb-6 tracking-tighter text-white reveal" style="animation-delay:0.1s">
+                ob<span class="hero-word-color">j.</span>
+            </h2>
+
+           
+            <div class="flex gap-10 justify-center mt-14 mb-10 reveal" style="animation-delay:0.3s">
+                <div class="hero-stat"><span class="hero-stat-num">8</span><span class="hero-stat-label">items</span></div>
+                <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
+                <div class="hero-stat"><span class="hero-stat-num">ph</span><span class="hero-stat-label">origin</span></div>
+                <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
+                <div class="hero-stat"><span class="hero-stat-num">7d</span><span class="hero-stat-label">returns</span></div>
+                <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
+                <div class="hero-stat"><span class="hero-stat-num">001</span><span class="hero-stat-label">batch</span></div>
+            </div>
+        </div>
+     
+             <p class="text-white/50 font-bold text-base mb-10 max-w-sm mx-auto reveal" style="animation-delay:0.15s">Earn the place. </p>
+               <div class="flex flex-col mb-14 sm:flex-row gap-3 justify-center reveal" style="animation-delay:0.2s">
+                <button onmousedown="scrolliTo('shop')" class="btn-pill bg-white text-black px-10 py-4 font-black text-base active:scale-95 transition-transform">shop now</button>
+                <button onmousedown="scrolliTo('about')" class="btn-pill font-black text-sm active:scale-95 transition-transform px-8 py-4" style="background:rgba(255,255,255,0.1);color:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.15);">our story →</button>
+            </div>
+        <div class="hero-scroll-hint"><i data-lucide="chevron-down" style="width:18px;height:18px;color:#fff;"></i></div>
+    </section>
+
+    <!-- ═══ ABOUT ═══ -->
+    <section id="about" class="snap-sec bg-white flex flex-col justify-center px-8 py-20">
+        <div class="content-width mx-auto w-full">
+            <div class="mb-12 border-b border-zinc-100 pb-8">
+                <p class="text-[10px] font-black  mb-3 text-zinc-300">who we are</p>
+                <h3 class="text-5xl font-black tracking-tighter mb-5">built for<br>the detail.</h3>
+                <p class="text-zinc-500 text-base font-bold max-w-lg">obj. is a small hardware collective based in the philippines. we source, curate, and ship objects that earn their place on your desk, your wrist, your shelf. no noise. no excess.</p>
+            </div>
+            <div class="about-grid mb-12">
+                <div class="about-card">
+                    <div class="w-10 h-10 bg-black rounded-full flex items-center justify-center mb-4"><i data-lucide="package" style="width:18px;height:18px;color:#fff;"></i></div>
+                    <h4 class="font-black text-lg mb-2">curated drops</h4>
+                    <p class="text-zinc-500 text-sm font-bold">every batch is limited. we release in small quantities so each piece stays meaningful.</p>
+                </div>
+                <div class="about-card">
+                    <div class="w-10 h-10 bg-black rounded-full flex items-center justify-center mb-4"><i data-lucide="globe" style="width:18px;height:18px;color:#fff;"></i></div>
+                    <h4 class="font-black text-lg mb-2">globally sourced</h4>
+                    <p class="text-zinc-500 text-sm font-bold">materials and makers from japan, germany, and southeast asia. quality without borders.</p>
+                </div>
+                <div class="about-card">
+                    <div class="w-10 h-10 bg-black rounded-full flex items-center justify-center mb-4"><i data-lucide="heart" style="width:18px;height:18px;color:#fff;"></i></div>
+                    <h4 class="font-black text-lg mb-2">made to last</h4>
+                    <p class="text-zinc-500 text-sm font-bold">we only carry things we'd own ourselves. if it doesn't pass our bench test, it doesn't ship.</p>
+                </div>
+            </div>
+            <div class="flex flex-wrap gap-10 justify-center text-center border-t border-zinc-100 pt-10">
+                <div><p class="text-5xl font-black">8</p><p class="text-xs font-bold text-zinc-400 mt-1">objects this batch</p></div>
+                <div><p class="text-5xl font-black">001</p><p class="text-xs font-bold text-zinc-400 mt-1">first drop</p></div>
+                <div><p class="text-5xl font-black">ph</p><p class="text-xs font-bold text-zinc-400 mt-1">based in bulacan</p></div>
+                <div><p class="text-5xl font-black">7d</p><p class="text-xs font-bold text-zinc-400 mt-1">return window</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ TRUST STRIP ═══ -->
+    <div class="snap-sec bg-zinc-50 flex items-center justify-center px-8 py-10 border-y border-zinc-100" style="min-height:auto;scroll-snap-align:start;scroll-snap-stop:always;">
+        <div class="flex flex-wrap gap-8 justify-center">
+            <div class="trust-item"><i data-lucide="shield-check" class="w-4 h-4 text-zinc-400"></i> verified seller</div>
+            <div class="trust-item"><i data-lucide="refresh-cw" class="w-4 h-4 text-zinc-400"></i> 7-day returns</div>
+            <div class="trust-item"><i data-lucide="truck" class="w-4 h-4 text-zinc-400"></i> nationwide shipping</div>
+            <div class="trust-item"><i data-lucide="lock" class="w-4 h-4 text-zinc-400"></i> secure checkout</div>
+        </div>
+    </div>
+
+    <!-- ═══ SHOP ═══ -->
+    <section id="shop" class="snap-free bg-white px-8 py-24">
+        <div class="content-width mx-auto">
+            <div class="mb-10 flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4 border-b border-zinc-100 pb-8">
+                <h3 class="text-5xl font-black tracking-tighter">catalog.</h3>
+                <div class="flex gap-2 flex-wrap" id="cat-pills"></div>
+            </div>
+            <div id="grid" class="product-flex"></div>
+            <div class="mt-20 bg-zinc-50 rounded-[2rem] p-8 text-center">
+                <p class="text-2xl font-black mb-2">not ready yet?</p>
+                <p class="text-zinc-500 text-sm mb-6 font-bold">join the waitlist. we'll message you when new batches land.</p>
+                <div class="flex gap-3 justify-center max-w-sm mx-auto">
+                    <input id="waitlist-input" type="email" placeholder="your@email.com" class="flex-1 bg-white border border-zinc-200 rounded-full px-5 py-3 text-sm font-bold focus:outline-none focus:border-zinc-400">
+                    <button onmousedown="joinWaitlist()" class="btn-pill bg-black text-white px-6 py-3 font-black text-sm active:scale-95 transition-transform">notify me</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer class="snap-free bg-black text-white py-16 px-8">
+        <div class="content-width mx-auto">
+            <div class="flex flex-col sm:flex-row justify-between gap-10 mb-12">
+                <div>
+                    <h2 class="text-3xl font-black mb-3">obj.</h2>
+                    <p class="text-zinc-400 text-sm font-bold max-w-xs">objects with intent. batch 001 now available.</p>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <p class="text-xs font-black  text-zinc-500">navigate</p>
+                    <button onmousedown="scrolliTo('hero')" class="text-sm font-bold text-zinc-300 text-left hover:text-white transition-colors">home</button>
+                    <button onmousedown="scrolliTo('about')" class="text-sm font-bold text-zinc-300 text-left hover:text-white transition-colors">about</button>
+                    <button onmousedown="scrolliTo('shop')" class="text-sm font-bold text-zinc-300 text-left hover:text-white transition-colors">shop</button>
+                </div>
+                <div class="flex flex-col gap-3">
+                    <p class="text-xs font-black  text-zinc-500">contact</p>
+                    <p class="text-sm font-bold text-zinc-300">hello@obj.ph</p>
+                    <p class="text-sm font-bold text-zinc-300">bulacan, philippines</p>
+                </div>
+            </div>
+            <div class="border-t border-zinc-800 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p class="text-zinc-600 text-xs font-bold">© 2026 obj. all rights reserved.</p>
+                <div class="flex gap-3">
+                    <button  class="btn-pill bg-zinc-800 text-zinc-300 px-4 py-2 text-xs font-bold hover:bg-zinc-700 transition-colors">privacy</button>
+                    <button class="btn-pill bg-zinc-800 text-zinc-300 px-4 py-2 text-xs font-bold hover:bg-zinc-700 transition-colors">terms</button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</div><!-- end #scroller -->
+
+<!-- DOCK (outside scroller, fixed) -->
+<div id="dock" class="dock-wrapper">
+    <button onmousedown="openCart()" class="dock-btn active:scale-95 transition-transform">
+        <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+        <span class="font-bold text-sm">bag</span>
+        <span id="cart-count" class="bg-white text-black text-[10px] font-black w-5 h-5 flex items-center justify-center rounded-full">0</span>
+    </button>
+</div>
+
+<div id="toast" class="toast">added to bag</div>
+
+<!-- ═══ PRODUCT SCREEN ═══ -->
+<div id="product-screen" class="product-screen">
+    <div class="min-h-screen flex flex-col">
+        <div class="sticky top-0 bg-white/90 backdrop-blur-xl border-b border-zinc-100 px-6 py-4 flex items-center gap-4 z-10">
+            <button onmousedown="closeScreen()" class="btn-pill bg-zinc-100 text-zinc-800 px-4 py-2 font-black text-sm flex items-center gap-2 active:scale-95 transition-transform">
+                <i data-lucide="arrow-left" style="width:14px;height:14px;"></i> back
+            </button>
+            <span id="screen-cat" class="text-xs font-bold text-zinc-400"></span>
+        </div>
+        <div class="flex-1 flex flex-col md:flex-row">
+            <div class="md:w-1/2 bg-zinc-50 flex items-center justify-center p-12 md:sticky md:top-16 md:self-start" style="min-height:50vh;">
+                <img id="screen-img" src="" class="max-h-full max-w-full object-contain drop-shadow-2xl" style="max-height:60vh;">
+            </div>
+            <div class="md:w-1/2 p-10 flex flex-col justify-center">
+                <div id="screen-badge" class="mb-2"></div>
+                <h2 id="screen-name" class="text-4xl font-black tracking-tighter mb-3"></h2>
+                <p id="screen-desc" class="text-zinc-500 font-bold mb-6 text-base"></p>
+                <div id="screen-urgency" class="urgency-bar hidden mb-6 w-fit"><span class="urgency-dot"></span><span id="screen-stock"></span></div>
+                <p id="screen-price" class="text-3xl font-black mb-8"></p>
+                <button id="screen-add-btn" class="btn-pill bg-black text-white py-5 px-8 font-black text-base active:scale-95 transition-transform w-full mb-4">add to bag</button>
+                <div class="mt-10 border-t border-zinc-100 pt-8 space-y-3">
+                    <p class="text-xs font-black uppercase text-zinc-300 mb-4">details</p>
+                    <div class="flex justify-between"><span class="text-sm font-bold text-zinc-400">category</span><span id="screen-cat-detail" class="text-sm font-black"></span></div>
+                    <div class="flex justify-between"><span class="text-sm font-bold text-zinc-400">availability</span><span id="screen-avail" class="text-sm font-black"></span></div>
+                    <div class="flex justify-between"><span class="text-sm font-bold text-zinc-400">shipping</span><span class="text-sm font-black">ph nationwide + global</span></div>
+                    <div class="flex justify-between"><span class="text-sm font-bold text-zinc-400">returns</span><span class="text-sm font-black">7-day window</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ CART SHEET ═══ -->
+<div id="cart-overlay" class="cart-overlay">
+    <div class="cart-sheet w-full max-w-[420px]">
+        <h4 class="text-2xl font-black mb-2">your bag.</h4>
+        <p id="cart-empty-msg" class="text-zinc-400 text-sm font-bold mb-6">nothing here yet.</p>
+        <div id="cart-list" class="space-y-3 mb-4 max-h-64 overflow-y-auto"></div>
+        <div id="cart-footer" class="hidden">
+            <div class="flex justify-between items-center py-4 border-t border-zinc-100 mb-4">
+                <p class="text-sm font-bold text-zinc-400">total</p>
+                <p id="total-price" class="text-2xl font-black">₱0</p>
+            </div>
+            <button class="btn-pill w-full bg-black text-white py-5 font-black active:scale-95 transition-transform mb-3">checkout →</button>
+            <p class="text-center text-[10px] font-bold text-zinc-300 uppercase">free shipping above ₱1,000</p>
+        </div>
+        <button onmousedown="closeCart()" class="btn-pill mt-4 w-full bg-zinc-100 text-zinc-400 py-3 font-black text-xs uppercase active:scale-95 transition-transform">close</button>
+    </div>
+</div>
+
+<!-- ═══ EXIT INTENT ═══ -->
+<div id="exit-overlay" class="exit-overlay">
+    <div class="exit-card">
+        <p class="text-4xl mb-3">wait.</p>
+        <p id="exit-headline" class="text-2xl font-black mb-2 tracking-tight">leaving already?</p>
+        <p id="exit-sub" class="text-zinc-500 text-sm font-bold mb-5">your bag still has items. batch 001 is limited — once it's gone, it's gone.</p>
+        <div id="exit-cart-preview" class="bg-zinc-50 rounded-2xl p-4 mb-5 text-left space-y-2"></div>
+        <button onmousedown="closeExit()" class="btn-pill w-full bg-black text-white py-4 font-black active:scale-95 transition-transform mb-3">keep shopping</button>
+        <button onmousedown="hardExit()" class="btn-pill w-full bg-zinc-100 text-zinc-400 py-3 font-black text-xs uppercase active:scale-95 transition-transform">yes, leave anyway</button>
+    </div>
+</div>
+
+<script>
+    const products = [
+        { id:1, name:"core watch", price:4500, img:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800", cat:"wearables", badge:"limited", desc:"minimalist automatic movement, 42mm brushed steel case.", stock:4 },
+        { id:2, name:"studio noise", price:8000, img:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&q=80&w=800", cat:"audio", badge:"new", desc:"40mm drivers, active noise cancellation, 30hr battery.", stock:12 },
+        { id:3, name:"optic lens", price:2500, img:"https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?auto=format&fit=crop&q=80&w=800", cat:"optics", badge:null, desc:"polarized uv400 acetate frames, five colorways.", stock:20 },
+        { id:4, name:"vessel set", price:1200, img:"https://images.unsplash.com/photo-1516715667032-70116221c777?auto=format&fit=crop&q=80&w=800", cat:"home", badge:"sale", desc:"matte ceramic set of three, dishwasher safe.", stock:8 },
+        { id:5, name:"field bag", price:3200, img:"https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&q=80&w=800", cat:"carry", badge:"new", desc:"waxed canvas + full-grain leather trim, 18L.", stock:6 },
+        { id:6, name:"arc lamp", price:5500, img:"https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&q=80&w=800", cat:"home", badge:null, desc:"brass stem, linen shade, dimmer switch included.", stock:3 },
+        { id:7, name:"desk mat", price:950, img:"https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?auto=format&fit=crop&q=80&w=800", cat:"desk", badge:null, desc:"90x40cm full-grain leather, stitched edges.", stock:15 },
+        { id:8, name:"pocket knife", price:1800, img:"https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&q=80&w=800", cat:"carry", badge:"limited", desc:"vg-10 steel blade, titanium scales, 78mm closed.", stock:2 },
+    ];
+
+    let cart = [], activeCategory = "all";
+
+    // nav scroll helper — scrolls inside #scroller
+    function scrolliTo(id) {
+        document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // CATEGORY PILLS
+    const categories = ["all", ...new Set(products.map(p => p.cat))];
+    const pillsEl = document.getElementById('cat-pills');
+    categories.forEach(c => {
+        const b = document.createElement('button');
+        b.className = "cat-pill" + (c === "all" ? " active" : "");
+        b.innerText = c;
+        b.onclick = () => { activeCategory = c; document.querySelectorAll('.cat-pill').forEach(x => x.classList.remove('active')); b.classList.add('active'); renderGrid(); };
+        pillsEl.appendChild(b);
+    });
+
+    function renderGrid() {
+        const grid = document.getElementById('grid');
+        grid.innerHTML = "";
+        const filtered = activeCategory === "all" ? products : products.filter(p => p.cat === activeCategory);
+        filtered.forEach(p => {
+            const el = document.createElement('div');
+            el.className = "product-card group cursor-pointer";
+            const badgeHtml = p.badge ? `<span class="badge-${p.badge === 'limited' ? 'limited' : p.badge === 'new' ? 'new' : 'sale'}">${p.badge}</span>` : '';
+            el.innerHTML = `
+                <div class="aspect-[4/5] bg-zinc-50 rounded-[2.5rem] overflow-hidden mb-4 relative" onmousedown="openScreen(${p.id})">
+                    <img src="${p.img}" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700">
+                    ${p.stock <= 4 ? `<div class="absolute bottom-3 left-3 urgency-bar"><span class="urgency-dot"></span>${p.stock} left</div>` : ''}
+                </div>
+                <div class="px-2 flex justify-between items-start" onmousedown="openScreen(${p.id})">
+                    <div>${badgeHtml}<h4 class="font-black text-sm">${p.name}</h4></div>
+                    <p class="text-zinc-400 font-bold text-sm mt-1">₱${p.price.toLocaleString()}</p>
+                </div>
+            `;
+            grid.appendChild(el);
+        });
+    }
+    renderGrid();
+    lucide.createIcons();
+
+    // DOCK: show only when shop section is visible inside #scroller
+    const shopEl = document.getElementById('shop');
+    const scroller = document.getElementById('scroller');
+    scroller.addEventListener('scroll', () => {
+        const dock = document.getElementById('dock');
+        const rect = shopEl.getBoundingClientRect();
+        const inShop = rect.top < window.innerHeight && rect.bottom > 0;
+        if (inShop) dock.classList.add('dock-active');
+        else dock.classList.remove('dock-active');
+    });
+
+    // EXIT INTENT
+    let exitCooldown = false;
+    function maybeExit(reason) {
+        if (cart.length === 0 || exitCooldown) return;
+        exitCooldown = true; showExit(reason);
+    }
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') maybeExit('tab'); });
+    document.addEventListener('mouseleave', e => { if (e.clientY < 10) maybeExit('mouse'); });
+
+    const exitMessages = {
+        tab:   { headline: 'switched tabs?',   sub: "your bag is still waiting. batch 001 won't be around forever." },
+        mouse: { headline: 'leaving already?', sub: "your bag still has items. once batch 001 is gone, it's gone." },
+    };
+    function showExit(reason = 'mouse') {
+        const msg = exitMessages[reason];
+        document.getElementById('exit-headline').innerText = msg.headline;
+        document.getElementById('exit-sub').innerText = msg.sub;
+        document.getElementById('exit-cart-preview').innerHTML = cart.slice(0,3).map(i =>
+            `<div class="flex items-center justify-between"><span class="text-sm font-bold">${i.name}</span><span class="text-xs font-bold text-zinc-400">₱${i.price.toLocaleString()}</span></div>`
+        ).join('') + (cart.length > 3 ? `<p class="text-xs font-bold text-zinc-400 pt-1">+${cart.length-3} more</p>` : '');
+        document.getElementById('exit-overlay').classList.add('active');
+    }
+    function closeExit() { document.getElementById('exit-overlay').classList.remove('active'); setTimeout(() => exitCooldown = false, 5000); }
+    function hardExit() { document.getElementById('exit-overlay').classList.remove('active'); }
+
+    // PRODUCT SCREEN
+    function openScreen(id) {
+        const p = products.find(x => x.id === id);
+        document.getElementById('screen-img').src = p.img;
+        document.getElementById('screen-name').innerText = p.name;
+        document.getElementById('screen-desc').innerText = p.desc;
+        document.getElementById('screen-price').innerText = `₱${p.price.toLocaleString()}`;
+        document.getElementById('screen-cat').innerText = p.cat;
+        document.getElementById('screen-cat-detail').innerText = p.cat;
+        document.getElementById('screen-avail').innerText = p.stock > 0 ? `${p.stock} in stock` : 'sold out';
+        document.getElementById('screen-badge').innerHTML = p.badge ? `<span class="badge-${p.badge === 'limited' ? 'limited' : p.badge === 'new' ? 'new' : 'sale'}">${p.badge}</span>` : '';
+        const urgency = document.getElementById('screen-urgency');
+        if (p.stock <= 6) { urgency.classList.remove('hidden'); document.getElementById('screen-stock').innerText = `only ${p.stock} left`; }
+        else urgency.classList.add('hidden');
+        document.getElementById('screen-add-btn').onclick = () => addToCart(id);
+        document.getElementById('product-screen').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeScreen() { document.getElementById('product-screen').classList.remove('open'); document.body.style.overflow = ''; }
+
+    // CART
+    function openCart() { document.getElementById('cart-overlay').classList.add('active'); document.body.style.overflow = 'hidden'; }
+    function closeCart() { document.getElementById('cart-overlay').classList.remove('active'); document.body.style.overflow = ''; }
+    document.getElementById('cart-overlay').addEventListener('click', e => { if (e.target === document.getElementById('cart-overlay')) closeCart(); });
+
+    function addToCart(id) { cart.push(products.find(p => p.id === id)); updateUI(); closeScreen(); showToast("added to bag"); }
+    function removeFromCart(idx) { cart.splice(idx, 1); updateUI(); }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg; t.classList.add('show');
+        setTimeout(() => t.classList.remove('show'), 2000);
+    }
+
+    function updateUI() {
+        const count = cart.length;
+        document.getElementById('cart-count').innerText = count;
+        const total = cart.reduce((a, p) => a + p.price, 0);
+        document.getElementById('total-price').innerText = `₱${total.toLocaleString()}`;
+        document.getElementById('cart-empty-msg').style.display = count === 0 ? 'block' : 'none';
+        document.getElementById('cart-footer').classList.toggle('hidden', count === 0);
+        const list = document.getElementById('cart-list');
+        list.innerHTML = cart.map((item, i) => `
+            <div class="cart-item">
+                <div class="cart-item-del"><i data-lucide="trash-2" style="color:#fff;width:16px;height:16px;"></i></div>
+                <div class="cart-item-inner" id="ci-${i}">
+                    <div class="w-10 h-10 bg-zinc-100 rounded-lg overflow-hidden flex-shrink-0"><img src="${item.img}" class="w-full h-full object-cover grayscale"></div>
+                    <div class="flex-1 min-w-0"><p class="font-black text-xs truncate">${item.name}</p></div>
+                    <p class="text-[11px] font-bold text-zinc-400 flex-shrink-0">₱${item.price.toLocaleString()}</p>
+                    <button onmousedown="removeFromCart(${i})" class="text-zinc-300 ml-2 flex-shrink-0"><i data-lucide="x" style="width:14px;height:14px;"></i></button>
+                </div>
+            </div>
+        `).join('');
+        lucide.createIcons();
+        cart.forEach((_, i) => {
+            const inner = document.getElementById(`ci-${i}`);
+            if (!inner) return;
+            let startX = 0;
+            inner.addEventListener('touchstart', e => startX = e.touches[0].clientX, { passive: true });
+            inner.addEventListener('touchmove', e => { const dx = e.touches[0].clientX - startX; if (dx < 0) inner.style.transform = `translateX(${Math.max(dx,-70)}px)`; }, { passive: true });
+            inner.addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - startX; if (dx < -50) removeFromCart(i); else inner.style.transform = 'translateX(0)'; });
+        });
+    }
+
+    function joinWaitlist() {
+        const v = document.getElementById('waitlist-input').value;
+        if (v.includes('@')) { showToast("you're on the list"); document.getElementById('waitlist-input').value = ''; }
+        else showToast("enter a valid email");
+    }
+</script>
+
+
+<are-you-sure>
+      <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+   
+    <script>
+(function () {
+  let fired = false;
+  let interacted = false;
+
+  const messages = [
+    "Hey are you leaving",
+    "Still here or gone",
+    "Wait a second",
+    "You sure about that",
+    "Don’t go yet",
+    "Quick check before you leave",
+    "You might miss something",
+    "Leaving already"
+  ];
+
+  function msg() {
+    return messages[Math.floor(Math.random() * messages.length)];
+  }
+
+  function markInteract() {
+    interacted = true;
+  }
+
+  ["click", "keydown", "scroll", "mousemove"].forEach(e => {
+    window.addEventListener(e, markInteract, { once: true });
+  });
+
+  function show() {
+    if (fired || !interacted) return;
+    fired = true;
+
+    const box = document.createElement("div");
+    box.style = "position:fixed;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;z-index:99999;font-family:sans-serif";
+
+    box.innerHTML = `
+      <div style="
+      text-transform: none;
+      font-family: 'Plus Jakarta Sans', sans-serif; background:#fff;padding:20px;justify-content: center;height: max-content;width: 40dvw;display: flex;flex-direction: column;border-radius:41px;text-align:center;max-width:280px">
+        <p style="margin-top: 42px;margin-bottom: 49px;"
+        class="
+        text-black
+        font-black text-base active:scale-95 transition-transform
+        ">${msg()}</p>
+
+<span style="display: flex;flex-direction: column;
+    ">
+
+<button id="stay" class="btn-pill bg-white text-black px-10 py-4 font-black text-base active:scale-95 transition-transform"
+style="color: white;flex: 1;background: #1f1e1e;border-radius:50px;">Stay</button>
+
+<button id="leave" 
+class="btn-pill text-black px-10 py-2 font-black text-base active:scale-95 transition-transform"
+style="flex: 1;border-radius:50px;">Leave</button>
+
+</span>
+        
+        
+      </div>
+    `;
+
+    document.body.appendChild(box);
+
+    document.getElementById("stay").onclick = () => {
+      fired = false;
+      box.remove();
+      window.focus();
+    };
+
+    document.getElementById("leave").onclick = () => {
+      window.location.href = "https://selhue.com";
+    };
+  }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+      setTimeout(show, 200);
+    }
+  });
+
+  window.addEventListener("blur", () => {
+    setTimeout(show, 200);
+  });
+
+  window.addEventListener("mouseout", e => {
+    if (e.clientY <= 0) show();
+  });
+
+  window.addEventListener("beforeunload", e => {
+    if (interacted) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  });
+
+  setInterval(() => {
+    if (!document.hasFocus()) {
+      window.focus();
+    }
+  }, 2000);
+
+})();
+</script>
+</are-you-sure>
+</body>
+</html>
