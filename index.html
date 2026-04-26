@@ -323,9 +323,10 @@
         <div class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-5" style="background:rgba(167,139,250,0.15);border:1px solid rgba(167,139,250,0.3);">
             <i data-lucide="shopping-cart" style="width:22px;height:22px;color:#a78bfa;"></i>
         </div>
-        <p class="text-2xl font-black text-white mb-2 tracking-tight">confirm order?</p>
-        <p class="text-sm font-bold mb-6" style="color:rgba(255,255,255,0.4);">you'll be taken to our order form to complete your delivery details and payment proof.</p>
+        <p class="text-2xl font-black text-white mb-2 tracking-tight">Confirm order?</p>
+        <p class="text-sm font-bold mb-6" style="color:rgba(255,255,255,0.4);">You'll be taken to our order form to complete your delivery details and payment proof.</p>
         <div id="confirm-items" class="rounded-2xl p-4 mb-6 text-left space-y-2" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);"></div>
+
         <div class="flex justify-between items-center mb-6 px-1">
             <span class="text-sm font-bold" style="color:rgba(255,255,255,0.4);">total</span>
             <span id="confirm-total" class="text-xl font-black text-white">₱0</span>
@@ -361,7 +362,7 @@
 </div>
 
 <script>
-    const TALLY_URL = 'https://tally.so/r/q4YE82';
+    const TALLY_URL = 'https://tally.so/embed/q4YE82?o=a?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1';
 
     const products = [
         { id:1, name:"core watch", price:4500, img:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800", cat:"wearables", badge:"limited", desc:"minimalist automatic movement, 42mm brushed steel case.", stock:4 },
@@ -451,8 +452,8 @@
 
     function goToTally() {
         const orders = cart.map(i => i.name).join(', ');
-        const url = `${TALLY_URL}?o=${encodeURIComponent(orders)}&p=${encodeURIComponent(document.getElementById('confirm-total').innerText)}`;
-        window.open(url, '_blank', 'width=520,height=720,scrollbars=yes');
+        const url = `${TALLY_URL}&o=${encodeURIComponent(orders)}&p=${encodeURIComponent(document.getElementById('confirm-total').innerText)}`;
+        window.open(url, '_blank', 'width=700,height=600,scrollbars=yes');
         closeConfirm();
     }
 
