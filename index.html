@@ -362,7 +362,7 @@
 </div>
 
 <script>
-    const TALLY_URL = 'https://tally.so/embed/q4YE82?o=a?alignLeft=1&hideTitle=1';
+    const TALLY_URL = 'https://tally.so/embed/q4YE82?alignLeft=1&hideTitle=1';
 
     const products = [
         { id:1, name:"core watch", price:4500, img:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800", cat:"wearables", badge:"limited", desc:"minimalist automatic movement, 42mm brushed steel case.", stock:4 },
@@ -450,9 +450,19 @@
     }
     function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('active'); }
 
+    function toProperCase(str) {
+  return str.replace(/\w\S*/g, w =>
+    w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+  );
+}
+    
     function goToTally() {
         const orders = cart.map(i => i.name).join(', ');
-        const url = `${TALLY_URL}&o=${encodeURIComponent(orders)}&p=${encodeURIComponent(document.getElementById('confirm-total').innerText)}`;
+        
+
+const formattedOrders = toProperCase(orders);
+
+const url = `${TALLY_URL}&o=${encodeURIComponent(formattedOrders)}&p=${encodeURIComponent(document.getElementById('confirm-total').innerText)}`;
         window.open(url, '_blank', 'width=700,height=600,scrollbars=yes');
         closeConfirm();
     }
