@@ -331,7 +331,7 @@
             <span class="text-sm font-bold" style="color:rgba(255,255,255,0.4);">total</span>
             <span id="confirm-total" class="text-xl font-black text-white">₱0</span>
         </div>
-        <button onmousedown="goToTally()" class="btn-pill w-full bg-white text-black py-4 font-black active:scale-95 transition-transform mb-3">confirm →</button>
+        <button onmousedown="selhuePAY()" class="btn-pill w-full bg-white text-black py-4 font-black active:scale-95 transition-transform mb-3">confirm →</button>
         <button onmousedown="closeConfirm()" class="btn-pill w-full py-3 font-black text-xs uppercase active:scale-95 transition-transform" style="background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.3);">cancel</button>
     </div>
 </div>
@@ -362,7 +362,7 @@
 </div>
 
 <script>
-    const TALLY_URL = 'https://tally.so/embed/q4YE82?alignLeft=1&hideTitle=1';
+    const SELHUE-PAY = 'http://selhue.com/pay/process';
 
     const products = [
         { id:1, name:"core watch", price:4500, img:"https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=800", cat:"wearables", badge:"limited", desc:"minimalist automatic movement, 42mm brushed steel case.", stock:4 },
@@ -456,13 +456,13 @@
   );
 }
     
-    function goToTally() {
+    function selhuePAY() {
         const orders = cart.map(i => i.name).join(', ');
         
 
 const formattedOrders = toProperCase(orders);
 
-const url = `${TALLY_URL}&o=${encodeURIComponent(formattedOrders)}&p=${encodeURIComponent(document.getElementById('confirm-total').innerText)}`;
+const url = `${SELHUE-PAY}?o=${encodeURIComponent(formattedOrders)}&p=${encodeURIComponent(document.getElementById('confirm-total').innerText)}`;
         window.open(url, '_blank', 'width=700,height=600,scrollbars=yes');
         closeConfirm();
     }
